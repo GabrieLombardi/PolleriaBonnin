@@ -727,6 +727,7 @@ function renderAdminRedemptions(){
     "https://ublwnorbfrggqvkarwkb.supabase.co",
     "sb_publishable_-5ueb_j_2TU8ZZOFJ1dgZg_2uHgdWBa"
   );
+  const APP_URL = "https://gabriellombardi.github.io/PolleriaBonnin/";
   let currentUser = null;
   let currentProfile = null;
 
@@ -769,7 +770,10 @@ function renderAdminRedemptions(){
     const {error} = await client.auth.signUp({
       email: document.getElementById('registerEmail').value.trim(),
       password: document.getElementById('registerPass').value,
-      options: {data: {name: document.getElementById('registerName').value.trim(), dni: document.getElementById('registerDni').value.trim()}}
+      options: {
+        emailRedirectTo: APP_URL,
+        data: {name: document.getElementById('registerName').value.trim(), dni: document.getElementById('registerDni').value.trim()}
+      }
     });
     if(error) message('loginError', error.message, false);
     else { message('loginError', 'Cuenta creada. Revisá tu email para confirmarla y luego ingresá.', true); setSecureLoginForm(); }
@@ -801,7 +805,7 @@ function renderAdminRedemptions(){
   async function resetPassword(){
     const email = document.getElementById('secureEmail')?.value.trim();
     if(!email){ message('loginError', 'Escribí tu email para recibir el enlace.', false); return; }
-    const {error} = await client.auth.resetPasswordForEmail(email, {redirectTo: window.location.href});
+    const {error} = await client.auth.resetPasswordForEmail(email, {redirectTo: APP_URL});
     message('loginError', error ? error.message : 'Te enviamos un enlace para recuperar la contraseña.', !error);
   }
   async function enterApp(){
