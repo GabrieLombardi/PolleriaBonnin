@@ -224,8 +224,8 @@
 
         <form id="formAdmin" class="hidden" onsubmit="return loginAdmin(event)">
           <div class="field">
-            <label for="adminUser">Usuario</label>
-            <input type="text" id="adminUser" required>
+            <label for="adminUser">Email</label>
+            <input type="email" id="adminUser" required>
           </div>
           <div class="field">
             <label for="adminPass">Contraseña</label>
@@ -875,6 +875,7 @@ function renderAdminRedemptions(){
   window.setAdminTab = function(tab){ adminTab = tab; ['clientes','beneficios','validar'].forEach(x => { document.getElementById('atab'+x[0].toUpperCase()+x.slice(1))?.classList.toggle('active', x === tab); document.getElementById('apanel-'+x)?.classList.toggle('hidden', x !== tab); }); if(tab==='clientes') renderAdminClientes(); if(tab==='beneficios') renderAdminBeneficios(); if(tab==='validar') renderAdminRedemptions(); };
   async function secureInit(){
     setSecureLoginForm();
+    document.getElementById('formAdmin').onsubmit = loginAdmin;
     const {data} = await client.auth.getSession();
     if(data.session){ currentUser = data.session.user; try { await enterApp(); } catch(e){ await client.auth.signOut(); } }
     else showView('login');
