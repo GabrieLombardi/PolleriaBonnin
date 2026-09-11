@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Club de Puntos — Pollería Bonnin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE1C4;
+    --paper-light:#FAF2DE;
+    --white:#FFFBF2;
+    --ink:#2A211A;
+    --ink-soft:#5b5145;
+    --brick:#B23A2E;
+    --brick-dark:#8C2C22;
+    --gold:#D99A27;
+    --gold-dark:#B87E17;
+    --olive:#5C6B42;
+    --line:#d8c7a2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 1px 1px, rgba(42,33,26,0.05) 1px, transparent 0) 0 0/22px 22px,
+      var(--paper);
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:960px; margin:0 auto;}
+  header.site{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:28px; flex-wrap:wrap; gap:12px;
+  }
+  .brand{display:flex; align-items:center; gap:14px;}
+  .brand-mark{
+    width:52px; height:52px; border-radius:50%;
+    background:var(--brick); color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Archivo Black', sans-serif; font-size:20px;
+    border:3px solid var(--ink);
+    flex-shrink:0;
+  }
+  .brand h1{
+    font-family:'Archivo Black', sans-serif;
+    font-size:22px; margin:0; letter-spacing:0.3px;
+    line-height:1.1;
+  }
+  .brand p{margin:2px 0 0; font-size:13px; color:var(--ink-soft);}
+  .session-bar{display:flex; align-items:center; gap:10px; font-size:14px;}
+  .session-bar span{color:var(--ink-soft);}
+  .btn{
+    font-family:'Work Sans', sans-serif; font-weight:600; font-size:14px;
+    border:2px solid var(--ink); background:var(--white); color:var(--ink);
+    padding:10px 18px; border-radius:8px; cursor:pointer;
+    transition:transform .08s ease, background .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn-primary{background:var(--brick); border-color:var(--brick-dark); color:var(--white);}
+  .btn-primary:hover{background:var(--brick-dark);}
+  .btn-gold{background:var(--gold); border-color:var(--gold-dark); color:var(--ink);}
+  .btn-gold:hover{background:var(--gold-dark); color:var(--white);}
+  .btn-ghost{background:transparent; border-color:var(--line); color:var(--ink-soft);}
+  .btn-small{padding:6px 12px; font-size:13px; border-radius:6px;}
+  .btn-danger{background:var(--white); border-color:var(--brick); color:var(--brick-dark);}
+  .btn:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+
+  .hidden{display:none !important;}
+
+  /* ---- ticket card ---- */
+  .ticket{
+    position:relative;
+    background:var(--white);
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:26px 24px 22px;
+    margin-bottom:22px;
+  }
+  .ticket::before{
+    content:'';
+    position:absolute; left:14px; right:14px; top:-9px; height:16px;
+    background-image: radial-gradient(circle at center, var(--paper) 7px, transparent 7.5px);
+    background-size:18px 16px;
+    background-repeat:repeat-x;
+    background-position:center top;
+  }
+  .ticket-label{
+    font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:1.5px; color:var(--ink-soft);
+    text-transform:uppercase; margin-bottom:6px;
+  }
+
+  /* ---- login ---- */
+  .login-shell{max-width:440px; margin:40px auto 0;}
+  .tabs{display:flex; gap:8px; margin-bottom:18px;}
+  .tab-btn{
+    flex:1; padding:12px; border-radius:8px 8px 0 0; border:2px solid var(--ink);
+    border-bottom:none; background:var(--paper-light); color:var(--ink-soft);
+    font-weight:600; cursor:pointer; font-size:14px;
+  }
+  .tab-btn.active{background:var(--white); color:var(--ink);}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--ink-soft);}
+  .field input, .field select{
+    width:100%; padding:11px 12px; border:2px solid var(--line); border-radius:7px;
+    font-size:15px; font-family:'Work Sans', sans-serif; background:var(--paper-light);
+    color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--gold); border-color:var(--gold);}
+  .error-msg{
+    background:#F6DFDB; border:1px solid var(--brick); color:var(--brick-dark);
+    padding:10px 12px; border-radius:7px; font-size:13px; margin-bottom:14px;
+  }
+  .ok-msg{
+    background:#E5EADA; border:1px solid var(--olive); color:#3c4629;
+    padding:10px 12px; border-radius:7px; font-size:13px; margin-bottom:14px;
+  }
+  .login-help{font-size:12px; color:var(--ink-soft); margin-top:14px; text-align:center;}
+
+  /* ---- dashboards ---- */
+  .tabbar{display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap;}
+  .tabbar button{
+    border:2px solid var(--ink); background:var(--paper-light); color:var(--ink-soft);
+    padding:9px 16px; border-radius:20px; font-weight:600; font-size:13px; cursor:pointer;
+  }
+  .tabbar button.active{background:var(--ink); color:var(--white); border-color:var(--ink);}
+
+  .points-big{
+    font-family:'Archivo Black', sans-serif; font-size:56px; line-height:1;
+    color:var(--brick); margin:2px 0 0;
+  }
+  .points-row{display:flex; align-items:flex-end; gap:10px; justify-content:space-between; flex-wrap:wrap;}
+  .points-unit{font-size:14px; color:var(--ink-soft); margin-bottom:8px;}
+
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th{
+    text-align:left; font-size:11px; letter-spacing:0.8px; text-transform:uppercase;
+    color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 6px;
+  }
+  td{padding:10px 6px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .pill{
+    display:inline-block; padding:3px 10px; border-radius:14px; font-size:11px; font-weight:700;
+    letter-spacing:.3px;
+  }
+  .pill-pend{background:#F3E2BC; color:#7a5a10;}
+  .pill-used{background:#E5EADA; color:#3c4629;}
+  .mono{font-family:'Space Mono', monospace;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:720px){.grid2{grid-template-columns:1fr;}}
+
+  .benefit-card{
+    border:2px solid var(--ink); border-radius:8px; padding:14px 16px; margin-bottom:12px;
+    display:flex; justify-content:space-between; align-items:center; gap:12px; background:var(--paper-light);
+  }
+  .benefit-name{font-weight:700; font-size:15px;}
+  .benefit-cost{font-size:13px; color:var(--brick-dark); font-weight:600; margin-top:2px;}
+
+  .code-reveal{
+    text-align:center; padding:22px 10px; border:2px dashed var(--brick); border-radius:10px;
+    background:var(--paper-light); margin:16px 0;
+  }
+  .code-reveal .code{
+    font-family:'Space Mono', monospace; font-size:32px; font-weight:700; letter-spacing:4px;
+    color:var(--brick-dark); margin:8px 0;
+  }
+
+  .inline-form{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px;}
+  .inline-form .field{margin-bottom:0; flex:1; min-width:120px;}
+
+  .empty-state{
+    text-align:center; padding:30px 10px; color:var(--ink-soft); font-size:14px;
+  }
+  .section-title{
+    font-family:'Archivo Black', sans-serif; font-size:16px; margin:0 0 14px;
+  }
+  .small-note{font-size:12px; color:var(--ink-soft); margin-top:6px;}
+  .client-row-name{font-weight:600;}
+  .client-row-dni{font-size:12px; color:var(--ink-soft); font-family:'Space Mono', monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div class="brand">
+      <div class="brand-mark">PB</div>
+      <div>
+        <h1>Club de Puntos</h1>
+        <p>Pollería Bonnin</p>
+      </div>
+    </div>
+    <div class="session-bar" id="sessionBar"></div>
+  </header>
+
+  <!-- LOGIN -->
+  <div id="view-login">
+    <div class="login-shell">
+      <div class="tabs">
+        <button class="tab-btn active" id="tabClienteBtn" onclick="setLoginTab('cliente')">Soy cliente</button>
+        <button class="tab-btn" id="tabAdminBtn" onclick="setLoginTab('admin')">Administrador</button>
+      </div>
+      <div class="ticket" style="margin-top:0;">
+        <div id="loginError"></div>
+
+        <form id="formCliente" onsubmit="return loginCliente(event)">
+          <div class="field">
+            <label for="clienteDni">Número de DNI</label>
+            <input type="text" id="clienteDni" inputmode="numeric" placeholder="Ej: 30710811" required>
+          </div>
+          <div class="field">
+            <label for="clientePass">Contraseña</label>
+            <input type="password" id="clientePass" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Ingresar</button>
+          <p class="login-help">¿Todavía no tenés cuenta? Pedila en el mostrador.</p>
+        </form>
+
+        <form id="formAdmin" class="hidden" onsubmit="return loginAdmin(event)">
+          <div class="field">
+            <label for="adminUser">Usuario</label>
+            <input type="text" id="adminUser" required>
+          </div>
+          <div class="field">
+            <label for="adminPass">Contraseña</label>
+            <input type="password" id="adminPass" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Ingresar como administrador</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENTE -->
+  <div id="view-client" class="hidden">
+    <div class="ticket">
+      <div class="ticket-label">Tu saldo</div>
+      <div class="points-row">
+        <div>
+          <div class="points-big" id="clientPoints">0</div>
+          <div class="points-unit">puntos disponibles</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="client-row-name" id="clientName">—</div>
+          <div class="client-row-dni" id="clientDniShown">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticket">
+      <div class="section-title">Beneficios disponibles</div>
+      <div id="clientBenefitsList"></div>
+    </div>
+
+    <div class="ticket">
+      <div class="section-title">Tus códigos de canje</div>
+      <div id="clientRedemptionsList"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="view-admin" class="hidden">
+    <div class="tabbar">
+      <button id="atabClientes" class="active" onclick="setAdminTab('clientes')">Clientes</button>
+      <button id="atabBeneficios" onclick="setAdminTab('beneficios')">Beneficios</button>
+      <button id="atabValidar" onclick="setAdminTab('validar')">Validar código</button>
+    </div>
+
+    <!-- Clientes -->
+    <div id="apanel-clientes">
+      <div class="ticket">
+        <div class="section-title">Crear cuenta de cliente</div>
+        <div id="createClienteMsg"></div>
+        <form onsubmit="return crearCliente(event)">
+          <div class="inline-form">
+            <div class="field">
+              <label>Nombre y apellido</label>
+              <input type="text" id="newClienteNombre" required>
+            </div>
+            <div class="field">
+              <label>DNI (usuario)</label>
+              <input type="text" id="newClienteDni" inputmode="numeric" required>
+            </div>
+            <div class="field">
+              <label>Contraseña</label>
+              <input type="text" id="newClientePass" required>
+            </div>
+            <div class="field" style="max-width:110px;">
+              <label>Puntos iniciales</label>
+              <input type="number" id="newClientePuntos" value="0" min="0">
+            </div>
+            <button type="submit" class="btn btn-primary">Crear cuenta</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="ticket">
+        <div class="section-title">Clientes registrados</div>
+        <div class="field" style="max-width:280px;">
+          <input type="text" id="buscarCliente" placeholder="Buscar por DNI o nombre..." oninput="renderAdminClientes()">
+        </div>
+        <div id="adminClientesList"></div>
+      </div>
+    </div>
+
+    <!-- Beneficios -->
+    <div id="apanel-beneficios" class="hidden">
+      <div class="ticket">
+        <div class="section-title">Agregar beneficio</div>
+        <form onsubmit="return crearBeneficio(event)">
+          <div class="inline-form">
+            <div class="field">
+              <label>Nombre del beneficio</label>
+              <input type="text" id="newBeneficioNombre" placeholder="Ej: Pollo entero gratis" required>
+            </div>
+            <div class="field" style="max-width:140px;">
+              <label>Costo en puntos</label>
+              <input type="number" id="newBeneficioCosto" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+          </div>
+        </form>
+      </div>
+      <div class="ticket">
+        <div class="section-title">Beneficios cargados</div>
+        <div id="adminBeneficiosList"></div>
+      </div>
+    </div>
+
+    <!-- Validar código -->
+    <div id="apanel-validar" class="hidden">
+      <div class="ticket">
+        <div class="section-title">Validar código de canje</div>
+        <p class="small-note">Pedile el código al cliente e ingresalo acá para confirmar el beneficio.</p>
+        <form onsubmit="return validarCodigo(event)" class="inline-form">
+          <div class="field">
+            <label>Código</label>
+            <input type="text" id="codigoValidar" class="mono" placeholder="PB-XXXXXX" style="text-transform:uppercase;" required>
+          </div>
+          <button type="submit" class="btn btn-gold">Validar</button>
+        </form>
+        <div id="validarResultado"></div>
+      </div>
+      <div class="ticket">
+        <div class="section-title">Historial de canjes</div>
+        <div id="adminRedemptionsList"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============ ESTADO Y PERSISTENCIA ============ */
+const ADMIN_USER = "";
+const ADMIN_PASS = "";
+const SUPABASE_URL = "https://ublwnorbfrggqvkarwkb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-5ueb_j_2TU8ZZOFJ1dgZg_2uHgdWBa";
+const SUPABASE_STATE_ID = "main";
+
+let db = { clients:{}, benefits:[], redemptions:{} };
+let session = null; // {type:'admin'} o {type:'cliente', dni}
+let loginTab = 'cliente';
+let adminTab = 'clientes';
+
+async function loadDB(){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/polleria_app_state?id=eq.${SUPABASE_STATE_ID}&select=data`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    });
+    if(!res.ok) throw new Error(`Supabase respondió ${res.status}`);
+    const rows = await res.json();
+    if(rows[0] && rows[0].data){ db = rows[0].data; }
+    db.clients = db.clients || {};
+    db.benefits = db.benefits || [];
+    db.redemptions = db.redemptions || {};
+  }catch(e){
+    console.error("No se pudo cargar la base de datos", e);
+    document.getElementById('loginError').innerHTML = `<div class="error-msg">No se pudo conectar con la base de datos. Verificá tu conexión y que hayas ejecutado el archivo supabase-schema.sql.</div>`;
+  }
+}
+
+async function saveDB(){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/polleria_app_state?id=eq.${SUPABASE_STATE_ID}`, {
+      method: 'PATCH',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify({ data: db, updated_at: new Date().toISOString() })
+    });
+    if(!res.ok) throw new Error(`Supabase respondió ${res.status}`);
+  }catch(e){
+    console.error("No se pudo guardar en Supabase", e);
+    alert("No se pudo guardar el cambio en la base de datos. Revisá tu conexión.");
+  }
+}
+
+/* ============ UTILIDADES ============ */
+function generarCodigo(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for(let i=0;i<6;i++){ s += chars[Math.floor(Math.random()*chars.length)]; }
+  return "PB-" + s;
+}
+function fechaHoy(){
+  const d = new Date();
+  return d.toLocaleDateString('es-AR') + " " + d.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+}
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ============ VISTAS ============ */
+function showView(name){
+  document.getElementById('view-login').classList.toggle('hidden', name!=='login');
+  document.getElementById('view-client').classList.toggle('hidden', name!=='client');
+  document.getElementById('view-admin').classList.toggle('hidden', name!=='admin');
+  renderSessionBar();
+}
+
+function renderSessionBar(){
+  const bar = document.getElementById('sessionBar');
+  if(!session){ bar.innerHTML = ""; return; }
+  if(session.type === 'admin'){
+    bar.innerHTML = `<span>Administrador</span> <button class="btn btn-ghost btn-small" onclick="cerrarSesion()">Cerrar sesión</button>`;
+  } else {
+    const c = db.clients[session.dni];
+    bar.innerHTML = `<span>Hola, ${esc(c ? c.name : session.dni)}</span> <button class="btn btn-ghost btn-small" onclick="cerrarSesion()">Cerrar sesión</button>`;
+  }
+}
+
+function cerrarSesion(){
+  session = null;
+  document.getElementById('loginError').innerHTML = "";
+  document.getElementById('formCliente').reset();
+  document.getElementById('formAdmin').reset();
+  showView('login');
+}
+
+function setLoginTab(tab){
+  loginTab = tab;
+  document.getElementById('tabClienteBtn').classList.toggle('active', tab==='cliente');
+  document.getElementById('tabAdminBtn').classList.toggle('active', tab==='admin');
+  document.getElementById('formCliente').classList.toggle('hidden', tab!=='cliente');
+  document.getElementById('formAdmin').classList.toggle('hidden', tab!=='admin');
+  document.getElementById('loginError').innerHTML = "";
+}
+
+function setAdminTab(tab){
+  adminTab = tab;
+  document.getElementById('atabClientes').classList.toggle('active', tab==='clientes');
+  document.getElementById('atabBeneficios').classList.toggle('active', tab==='beneficios');
+  document.getElementById('atabValidar').classList.toggle('active', tab==='validar');
+  document.getElementById('apanel-clientes').classList.toggle('hidden', tab!=='clientes');
+  document.getElementById('apanel-beneficios').classList.toggle('hidden', tab!=='beneficios');
+  document.getElementById('apanel-validar').classList.toggle('hidden', tab!=='validar');
+  if(tab==='clientes') renderAdminClientes();
+  if(tab==='beneficios') renderAdminBeneficios();
+  if(tab==='validar') renderAdminRedemptions();
+}
+
+/* ============ LOGIN ============ */
+function loginAdmin(ev){
+  ev.preventDefault();
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value;
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    session = { type:'admin' };
+    document.getElementById('loginError').innerHTML = "";
+    document.getElementById('formAdmin').reset();
+    setAdminTab('clientes');
+    showView('admin');
+  } else {
+    document.getElementById('loginError').innerHTML = `<div class="error-msg">Usuario o contraseña incorrectos.</div>`;
+  }
+  return false;
+}
+
+function loginCliente(ev){
+  ev.preventDefault();
+  const dni = document.getElementById('clienteDni').value.trim();
+  const pass = document.getElementById('clientePass').value;
+  const c = db.clients[dni];
+  if(c && c.password === pass){
+    session = { type:'cliente', dni };
+    document.getElementById('loginError').innerHTML = "";
+    document.getElementById('formCliente').reset();
+    renderClientView();
+    showView('client');
+  } else {
+    document.getElementById('loginError').innerHTML = `<div class="error-msg">DNI o contraseña incorrectos.</div>`;
+  }
+  return false;
+}
+
+/* ============ VISTA CLIENTE ============ */
+function renderClientView(){
+  const c = db.clients[session.dni];
+  if(!c){ cerrarSesion(); return; }
+  document.getElementById('clientPoints').textContent = c.points;
+  document.getElementById('clientName').textContent = c.name;
+  document.getElementById('clientDniShown').textContent = "DNI " + c.dni;
+
+  const benefitsList = document.getElementById('clientBenefitsList');
+  if(db.benefits.length === 0){
+    benefitsList.innerHTML = `<div class="empty-state">Todavía no hay beneficios cargados.</div>`;
+  } else {
+    benefitsList.innerHTML = db.benefits.map(b => {
+      const puede = c.points >= b.cost;
+      return `<div class="benefit-card">
+        <div>
+          <div class="benefit-name">${esc(b.name)}</div>
+          <div class="benefit-cost">${b.cost} puntos</div>
+        </div>
+        <button class="btn ${puede?'btn-primary':'btn-ghost'}" ${puede?'':'disabled'} onclick="canjear('${b.id}')">Canjear</button>
+      </div>`;
+    }).join('');
+  }
+
+  const redList = document.getElementById('clientRedemptionsList');
+  const own = Object.values(db.redemptions).filter(r => r.dni === session.dni).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  if(own.length === 0){
+    redList.innerHTML = `<div class="empty-state">Todavía no canjeaste ningún beneficio.</div>`;
+  } else {
+    redList.innerHTML = `<table><thead><tr><th>Código</th><th>Beneficio</th><th>Estado</th></tr></thead><tbody>` +
+      own.map(r => `<tr>
+        <td class="mono">${esc(r.code)}</td>
+        <td>${esc(r.benefitName)}</td>
+        <td>${r.status==='usado' ? '<span class="pill pill-used">Usado</span>' : '<span class="pill pill-pend">Pendiente</span>'}</td>
+      </tr>`).join('') + `</tbody></table>`;
+  }
+}
+
+async function canjear(benefitId){
+  const c = db.clients[session.dni];
+  const b = db.benefits.find(x => x.id === benefitId);
+  if(!c || !b) return;
+  if(c.points < b.cost){ alert("No te alcanzan los puntos para este beneficio."); return; }
+  if(!confirm(`¿Canjear "${b.name}" por ${b.cost} puntos? Se generará un código para mostrar en el local.`)) return;
+
+  c.points -= b.cost;
+  c.history = c.history || [];
+  c.history.push({date: fechaHoy(), delta: -b.cost, reason: "Canje: " + b.name});
+
+  const code = generarCodigo();
+  db.redemptions[code] = {
+    code, dni: c.dni, benefitId: b.id, benefitName: b.name, cost: b.cost,
+    status: 'pendiente', createdAt: fechaHoy()
+  };
+
+  await saveDB();
+  renderClientView();
+
+  document.getElementById('clientRedemptionsList').insertAdjacentHTML('beforebegin',
+    `<div class="code-reveal"><div class="ticket-label">Mostrá este código en el mostrador</div><div class="code">${esc(code)}</div></div>`);
+}
+
+/* ============ ADMIN: CLIENTES ============ */
+function crearCliente(ev){
+  ev.preventDefault();
+  const nombre = document.getElementById('newClienteNombre').value.trim();
+  const dni = document.getElementById('newClienteDni').value.trim();
+  const pass = document.getElementById('newClientePass').value;
+  const puntos = parseInt(document.getElementById('newClientePuntos').value || "0", 10);
+  const msg = document.getElementById('createClienteMsg');
+
+  if(db.clients[dni]){
+    msg.innerHTML = `<div class="error-msg">Ya existe un cliente con ese DNI.</div>`;
+    return false;
+  }
+  db.clients[dni] = { dni, name: nombre, password: pass, points: puntos || 0, history: [{date: fechaHoy(), delta: puntos||0, reason:"Alta de cuenta"}] };
+  saveDB();
+  msg.innerHTML = `<div class="ok-msg">Cuenta creada para ${esc(nombre)}.</div>`;
+  document.getElementById('newClienteNombre').value = "";
+  document.getElementById('newClienteDni').value = "";
+  document.getElementById('newClientePass').value = "";
+  document.getElementById('newClientePuntos').value = "0";
+  renderAdminClientes();
+  return false;
+}
+
+function renderAdminClientes(){
+  const box = document.getElementById('adminClientesList');
+  const q = (document.getElementById('buscarCliente')?.value || "").trim().toLowerCase();
+  let list = Object.values(db.clients);
+  if(q){
+    list = list.filter(c => c.dni.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
+  }
+  list.sort((a,b)=> a.name.localeCompare(b.name));
+
+  if(list.length === 0){
+    box.innerHTML = `<div class="empty-state">No hay clientes para mostrar.</div>`;
+    return;
+  }
+
+  box.innerHTML = `<table><thead><tr><th>Cliente</th><th>Puntos</th><th>Sumar / restar</th><th></th></tr></thead><tbody>` +
+    list.map(c => `<tr>
+      <td><div class="client-row-name">${esc(c.name)}</div><div class="client-row-dni">DNI ${esc(c.dni)}</div></td>
+      <td style="font-weight:700;">${c.points}</td>
+      <td>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <input type="number" id="delta-${esc(c.dni)}" placeholder="ej: 50" style="width:80px; padding:6px 8px; border:2px solid var(--line); border-radius:6px;">
+          <button class="btn btn-small btn-gold" onclick="ajustarPuntos('${esc(c.dni)}')">Aplicar</button>
+        </div>
+      </td>
+      <td><button class="btn btn-small btn-danger" onclick="eliminarCliente('${esc(c.dni)}')">Eliminar</button></td>
+    </tr>`).join('') + `</tbody></table>`;
+}
+
+async function ajustarPuntos(dni){
+  const input = document.getElementById('delta-' + dni);
+  const delta = parseInt(input.value, 10);
+  if(isNaN(delta) || delta === 0){ return; }
+  const c = db.clients[dni];
+  if(!c) return;
+  c.points = Math.max(0, c.points + delta);
+  c.history = c.history || [];
+  c.history.push({date: fechaHoy(), delta, reason: delta > 0 ? "Puntos por venta" : "Ajuste manual"});
+  await saveDB();
+  input.value = "";
+  renderAdminClientes();
+}
+
+async function eliminarCliente(dni){
+  if(!confirm("¿Eliminar esta cuenta de cliente? Esta acción no se puede deshacer.")) return;
+  delete db.clients[dni];
+  await saveDB();
+  renderAdminClientes();
+}
+
+/* ============ ADMIN: BENEFICIOS ============ */
+function crearBeneficio(ev){
+  ev.preventDefault();
+  const nombre = document.getElementById('newBeneficioNombre').value.trim();
+  const costo = parseInt(document.getElementById('newBeneficioCosto').value, 10);
+  if(!nombre || !costo || costo <= 0) return false;
+  db.benefits.push({ id: 'b' + Date.now(), name: nombre, cost: costo });
+  saveDB();
+  document.getElementById('newBeneficioNombre').value = "";
+  document.getElementById('newBeneficioCosto').value = "";
+  renderAdminBeneficios();
+  return false;
+}
+
+function renderAdminBeneficios(){
+  const box = document.getElementById('adminBeneficiosList');
+  if(db.benefits.length === 0){
+    box.innerHTML = `<div class="empty-state">Todavía no cargaste beneficios.</div>`;
+    return;
+  }
+  box.innerHTML = db.benefits.map(b => `<div class="benefit-card">
+    <div>
+      <div class="benefit-name">${esc(b.name)}</div>
+      <div class="benefit-cost">${b.cost} puntos</div>
+    </div>
+    <button class="btn btn-small btn-danger" onclick="eliminarBeneficio('${b.id}')">Eliminar</button>
+  </div>`).join('');
+}
+
+async function eliminarBeneficio(id){
+  if(!confirm("¿Eliminar este beneficio?")) return;
+  db.benefits = db.benefits.filter(b => b.id !== id);
+  await saveDB();
+  renderAdminBeneficios();
+}
+
+/* ============ ADMIN: VALIDAR CÓDIGO ============ */
+async function validarCodigo(ev){
+  ev.preventDefault();
+  const input = document.getElementById('codigoValidar');
+  const code = input.value.trim().toUpperCase();
+  const res = document.getElementById('validarResultado');
+  const r = db.redemptions[code];
+
+  if(!r){
+    res.innerHTML = `<div class="error-msg">Código no encontrado. Revisá que esté bien escrito.</div>`;
+  } else if(r.status === 'usado'){
+    res.innerHTML = `<div class="error-msg">Este código ya fue usado el ${esc(r.usedAt)}.</div>`;
+  } else {
+    r.status = 'usado';
+    r.usedAt = fechaHoy();
+    await saveDB();
+    const c = db.clients[r.dni];
+    res.innerHTML = `<div class="ok-msg" style="font-size:16px; font-weight:700;">✓ OK — Beneficio válido: ${esc(r.benefitName)} (${esc(c ? c.name : r.dni)})</div>`;
+  }
+  input.value = "";
+  renderAdminRedemptions();
+  return false;
+}
+
+function renderAdminRedemptions(){
+  const box = document.getElementById('adminRedemptionsList');
+  const list = Object.values(db.redemptions).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  if(list.length === 0){
+    box.innerHTML = `<div class="empty-state">Todavía no se generaron códigos de canje.</div>`;
+    return;
+  }
+  box.innerHTML = `<table><thead><tr><th>Código</th><th>Cliente</th><th>Beneficio</th><th>Estado</th></tr></thead><tbody>` +
+    list.map(r => {
+      const c = db.clients[r.dni];
+      return `<tr>
+        <td class="mono">${esc(r.code)}</td>
+        <td>${esc(c ? c.name : r.dni)}</td>
+        <td>${esc(r.benefitName)}</td>
+        <td>${r.status==='usado' ? '<span class="pill pill-used">Usado</span>' : '<span class="pill pill-pend">Pendiente</span>'}</td>
+      </tr>`;
+    }).join('') + `</tbody></table>`;
+}
+
+/* ============ INIT ============ */
+</script>
+<script>
+/* ============ SUPABASE AUTH Y DATOS SEGUROS ============ */
+(function(){
+  const client = window.supabase.createClient(
+    "https://ublwnorbfrggqvkarwkb.supabase.co",
+    "sb_publishable_-5ueb_j_2TU8ZZOFJ1dgZg_2uHgdWBa"
+  );
+  let currentUser = null;
+  let currentProfile = null;
+
+  function message(id, text, ok){
+    const box = document.getElementById(id);
+    if(box) box.innerHTML = `<div class="${ok ? 'ok-msg' : 'error-msg'}">${esc(text)}</div>`;
+  }
+  async function profile(){
+    const {data, error} = await client.from('profiles').select('*').eq('id', currentUser.id).single();
+    if(error) throw error;
+    currentProfile = data;
+    return data;
+  }
+  function setSecureLoginForm(){
+    const form = document.getElementById('formCliente');
+    form.innerHTML = `
+      <div class="field"><label for="secureEmail">Email</label><input type="email" id="secureEmail" required></div>
+      <div class="field"><label for="securePass">Contraseña</label><input type="password" id="securePass" minlength="8" required></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Ingresar</button>
+      <button type="button" class="btn btn-ghost" style="width:100%;margin-top:8px;" id="showRegister">Crear cuenta</button>
+      <button type="button" class="btn btn-ghost" style="width:100%;margin-top:8px;" id="forgotPassword">Recuperar contraseña</button>`;
+    form.onsubmit = loginCliente;
+    document.getElementById('showRegister').onclick = showRegister;
+    document.getElementById('forgotPassword').onclick = resetPassword;
+  }
+  function showRegister(){
+    const form = document.getElementById('formCliente');
+    form.innerHTML = `
+      <div class="field"><label for="registerName">Nombre y apellido</label><input type="text" id="registerName" required></div>
+      <div class="field"><label for="registerDni">DNI</label><input type="text" id="registerDni" required></div>
+      <div class="field"><label for="registerEmail">Email</label><input type="email" id="registerEmail" required></div>
+      <div class="field"><label for="registerPass">Contraseña (mínimo 8 caracteres)</label><input type="password" id="registerPass" minlength="8" required></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Crear cuenta</button>
+      <button type="button" class="btn btn-ghost" style="width:100%;margin-top:8px;" id="backToLogin">Volver</button>`;
+    form.onsubmit = registerClient;
+    document.getElementById('backToLogin').onclick = setSecureLoginForm;
+  }
+  async function registerClient(ev){
+    ev.preventDefault();
+    const {error} = await client.auth.signUp({
+      email: document.getElementById('registerEmail').value.trim(),
+      password: document.getElementById('registerPass').value,
+      options: {data: {name: document.getElementById('registerName').value.trim(), dni: document.getElementById('registerDni').value.trim()}}
+    });
+    if(error) message('loginError', error.message, false);
+    else { message('loginError', 'Cuenta creada. Revisá tu email para confirmarla y luego ingresá.', true); setSecureLoginForm(); }
+    return false;
+  }
+  async function loginCliente(ev){
+    ev.preventDefault();
+    const {data, error} = await client.auth.signInWithPassword({
+      email: document.getElementById('secureEmail').value.trim(),
+      password: document.getElementById('securePass').value
+    });
+    if(error){ message('loginError', 'Email o contraseña incorrectos.', false); return false; }
+    currentUser = data.user; await enterApp();
+    return false;
+  }
+  async function loginAdmin(ev){
+    ev.preventDefault();
+    const {data, error} = await client.auth.signInWithPassword({
+      email: document.getElementById('adminUser').value.trim(),
+      password: document.getElementById('adminPass').value
+    });
+    if(error){ message('loginError', 'Email o contraseña incorrectos.', false); return false; }
+    currentUser = data.user;
+    try { await profile(); } catch(e){ message('loginError', 'No se pudo cargar el perfil.', false); return false; }
+    if(currentProfile.role !== 'admin'){ await client.auth.signOut(); message('loginError', 'Esta cuenta no es administradora.', false); return false; }
+    await enterApp();
+    return false;
+  }
+  async function resetPassword(){
+    const email = document.getElementById('secureEmail')?.value.trim();
+    if(!email){ message('loginError', 'Escribí tu email para recibir el enlace.', false); return; }
+    const {error} = await client.auth.resetPasswordForEmail(email, {redirectTo: window.location.href});
+    message('loginError', error ? error.message : 'Te enviamos un enlace para recuperar la contraseña.', !error);
+  }
+  async function enterApp(){
+    currentProfile = await profile();
+    if(currentProfile.role === 'admin'){ setAdminTab('clientes'); showView('admin'); await renderAdminClientes(); }
+    else { await renderClientView(); showView('client'); }
+  }
+  window.cerrarSesion = async function(){ await client.auth.signOut(); currentUser = null; currentProfile = null; setSecureLoginForm(); showView('login'); };
+  window.renderSessionBar = function(){
+    const bar = document.getElementById('sessionBar');
+    if(!currentUser){ bar.innerHTML = ''; return; }
+    bar.innerHTML = `<span>${currentProfile?.role === 'admin' ? 'Administrador' : `Hola, ${esc(currentProfile?.name || '')}`}</span> <button class="btn btn-ghost btn-small" onclick="cerrarSesion()">Cerrar sesión</button>`;
+  };
+  window.renderClientView = async function(){
+    await profile();
+    document.getElementById('clientPoints').textContent = currentProfile.points;
+    document.getElementById('clientName').textContent = currentProfile.name;
+    document.getElementById('clientDniShown').textContent = 'DNI ' + (currentProfile.dni || '—');
+    const {data: benefits} = await client.from('benefits').select('*').eq('active', true).order('created_at');
+    document.getElementById('clientBenefitsList').innerHTML = (benefits || []).map(b => `<div class="benefit-card"><div><div class="benefit-name">${esc(b.name)}</div><div class="benefit-cost">${b.cost} puntos</div></div><button class="btn ${currentProfile.points >= b.cost ? 'btn-primary' : 'btn-ghost'}" ${currentProfile.points >= b.cost ? '' : 'disabled'} onclick="canjear('${b.id}')">Canjear</button></div>`).join('') || '<div class="empty-state">Todavía no hay beneficios cargados.</div>';
+    const {data: redemptions} = await client.from('redemptions').select('*, benefits(name)').eq('client_id', currentUser.id).order('created_at', {ascending:false});
+    document.getElementById('clientRedemptionsList').innerHTML = redemptions?.length ? `<table><thead><tr><th>Código</th><th>Beneficio</th><th>Estado</th></tr></thead><tbody>${redemptions.map(r => `<tr><td class="mono">${esc(r.code)}</td><td>${esc(r.benefits?.name || '')}</td><td>${r.status === 'usado' ? '<span class="pill pill-used">Usado</span>' : '<span class="pill pill-pend">Pendiente</span>'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty-state">Todavía no canjeaste ningún beneficio.</div>';
+  };
+  window.canjear = async function(id){
+    if(!confirm('¿Canjear este beneficio?')) return;
+    const {error} = await client.rpc('redeem_benefit', {p_benefit_id: id});
+    if(error){ alert(error.message); return; }
+    await renderClientView();
+    message('loginError', 'Canje realizado correctamente. Mostrá el código en el historial.', true);
+  };
+  window.renderAdminClientes = async function(){
+    const {data} = await client.from('profiles').select('*').eq('role', 'cliente').order('name');
+    const q = (document.getElementById('buscarCliente')?.value || '').toLowerCase();
+    const list = (data || []).filter(c => c.name.toLowerCase().includes(q) || (c.dni || '').includes(q));
+    document.getElementById('adminClientesList').innerHTML = list.length ? `<table><thead><tr><th>Cliente</th><th>Puntos</th><th>Ajustar</th></tr></thead><tbody>${list.map(c => `<tr><td><div class="client-row-name">${esc(c.name)}</div><div class="client-row-dni">${esc(c.email)} · DNI ${esc(c.dni || '—')}</div></td><td>${c.points}</td><td><input type="number" id="delta-${c.id}" style="width:80px;padding:6px;"><button class="btn btn-small btn-gold" onclick="ajustarPuntos('${c.id}')">Aplicar</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty-state">No hay clientes para mostrar.</div>';
+  };
+  window.ajustarPuntos = async function(id){
+    const input = document.getElementById('delta-' + id); const delta = parseInt(input.value, 10);
+    if(!delta) return;
+    const {data: c, error: readError} = await client.from('profiles').select('points').eq('id', id).single();
+    if(readError) return alert(readError.message);
+    const {error} = await client.from('profiles').update({points: Math.max(0, c.points + delta)}).eq('id', id);
+    if(error) alert(error.message); else { await client.from('point_movements').insert({client_id:id, delta, reason: delta > 0 ? 'Puntos por venta' : 'Ajuste manual'}); await renderAdminClientes(); }
+  };
+  window.crearBeneficio = async function(ev){
+    ev.preventDefault();
+    const {error} = await client.from('benefits').insert({name: document.getElementById('newBeneficioNombre').value.trim(), cost: parseInt(document.getElementById('newBeneficioCosto').value, 10)});
+    if(error) alert(error.message); else { ev.target.reset(); await renderAdminBeneficios(); }
+    return false;
+  };
+  window.renderAdminBeneficios = async function(){
+    const {data} = await client.from('benefits').select('*').eq('active', true).order('created_at');
+    document.getElementById('adminBeneficiosList').innerHTML = data?.length ? data.map(b => `<div class="benefit-card"><div><div class="benefit-name">${esc(b.name)}</div><div class="benefit-cost">${b.cost} puntos</div></div><button class="btn btn-small btn-danger" onclick="eliminarBeneficio('${b.id}')">Eliminar</button></div>`).join('') : '<div class="empty-state">Todavía no cargaste beneficios.</div>';
+  };
+  window.eliminarBeneficio = async function(id){ if(confirm('¿Eliminar este beneficio?')) { await client.from('benefits').update({active:false}).eq('id', id); await renderAdminBeneficios(); } };
+  window.validarCodigo = async function(ev){
+    ev.preventDefault(); const code = document.getElementById('codigoValidar').value.trim();
+    const {data, error} = await client.rpc('validate_redemption', {p_code: code});
+    document.getElementById('validarResultado').innerHTML = error ? `<div class="error-msg">${esc(error.message)}</div>` : `<div class="ok-msg">Código válido: ${esc(data.benefit_id)}</div>`;
+    ev.target.reset(); await renderAdminRedemptions(); return false;
+  };
+  window.renderAdminRedemptions = async function(){
+    const {data} = await client.from('redemptions').select('*, profiles(name,email), benefits(name)').order('created_at', {ascending:false});
+    document.getElementById('adminRedemptionsList').innerHTML = data?.length ? `<table><thead><tr><th>Código</th><th>Cliente</th><th>Beneficio</th><th>Estado</th></tr></thead><tbody>${data.map(r => `<tr><td class="mono">${esc(r.code)}</td><td>${esc(r.profiles?.name || r.profiles?.email || '')}</td><td>${esc(r.benefits?.name || '')}</td><td>${r.status === 'usado' ? '<span class="pill pill-used">Usado</span>' : '<span class="pill pill-pend">Pendiente</span>'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty-state">Todavía no se generaron códigos.</div>';
+  };
+  window.crearCliente = function(ev){ ev.preventDefault(); message('createClienteMsg', 'Los clientes deben registrarse con su email desde “Soy cliente”.', false); return false; };
+  window.setAdminTab = function(tab){ adminTab = tab; ['clientes','beneficios','validar'].forEach(x => { document.getElementById('atab'+x[0].toUpperCase()+x.slice(1))?.classList.toggle('active', x === tab); document.getElementById('apanel-'+x)?.classList.toggle('hidden', x !== tab); }); if(tab==='clientes') renderAdminClientes(); if(tab==='beneficios') renderAdminBeneficios(); if(tab==='validar') renderAdminRedemptions(); };
+  async function secureInit(){
+    setSecureLoginForm();
+    const {data} = await client.auth.getSession();
+    if(data.session){ currentUser = data.session.user; try { await enterApp(); } catch(e){ await client.auth.signOut(); } }
+    else showView('login');
+    client.auth.onAuthStateChange((_event, session) => { currentUser = session?.user || null; renderSessionBar(); });
+  }
+  secureInit();
+})();
+</script>
+</body>
+</html>
